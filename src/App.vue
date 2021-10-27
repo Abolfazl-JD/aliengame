@@ -54,6 +54,17 @@
             />
           </g>
         </svg>
+
+        <div class="friendtalk">
+          <h3>{{ questions[questionIndex].question }}</h3>
+        </div>
+        <div class="zombietalk">
+          <p v-for="character in characterChoices" :key="character">
+            <button @click="pickQuestion(character)">
+              {{questions[questionIndex][character]}}
+            </button>
+          </p> 
+        </div>
     </section>
     
   </div>
@@ -74,7 +85,9 @@ export default {
     ...mapState([
       'uiState',
       'questions',
-      'character'
+      'character',
+      'questionIndex',
+      'characterChoices'
     ])
   },
 
@@ -86,7 +99,13 @@ export default {
     Mechanic,
     Score,
     Zombie,
-  }
+  },
+
+  methods: {
+    pickQuestion(character) {
+      this.$store.commit('PICK_QUESTION', character)
+    }
+  },
 };
 
 </script>

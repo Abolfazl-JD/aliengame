@@ -58,9 +58,19 @@ export default new Vuex.Store({
         },
 
         PICK_QUESTION(state, character) {
-            character === state.character ? state.score += 10 : state.score -= 10
+            character === state.character ? state.score += 13 : state.score -= 13
 
-            if (state.questionIndex < state.questions.length - 1) state.questionIndex++
+            if (state.questionIndex < state.questions.length - 1) {
+                state.questionIndex++
+            } else {
+                Math.sign(state.score) > 0 ? state.uiState = 'won' : state.uiState = 'lost'
+            }
+        },
+
+        RESTART_GAME(state) {
+            state.uiState = 'start'
+            state.questionIndex = 0
+            state.score = 0
         }
     },
     actions: {},

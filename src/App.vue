@@ -3,7 +3,8 @@
 
     <gameStateStart v-if="uiState === 'start'"/>
 
-    <section v-else>
+    <section v-else-if="uiState === 'characterChosen'">
+
         <svg viewBox="0 -180 1628 1180" class="main">
           <defs>
             <clipPath id="bottom-clip">
@@ -18,6 +19,7 @@
           <Score />
 
           <component :is="character"></component>
+          <Zombie class="zombie-clip" />
 
           <text
             x="1000"
@@ -59,18 +61,21 @@
           <h3>{{ questions[questionIndex].question }}</h3>
         </div>
         <div class="zombietalk">
-          <p v-for="character in characterChoices" :key="character">
+          <p v-for="character in shuffle(characterChoices)" :key="character">
             <button @click="pickQuestion(character)">
               {{questions[questionIndex][character]}}
             </button>
           </p> 
         </div>
     </section>
+
+    <GameStateFinish v-else/>
     
   </div>
 </template>
 
 <script>
+import gsap from 'gsap';
 import { mapState } from 'vuex';
 import gameStateStart from '@/components/gameStateStart.vue';
 import Artist from '@/components/Artist.vue';
@@ -79,6 +84,7 @@ import Friend from '@/components/Friend.vue';
 import Mechanic from '@/components/Mechanic.vue';
 import Score from '@/components/Score.vue';
 import Zombie from '@/components/Zombie.vue';
+import GameStateFinish from './components/GameStateFinish.vue';
 
 export default {
   computed: {
@@ -87,7 +93,8 @@ export default {
       'questions',
       'character',
       'questionIndex',
-      'characterChoices'
+      'characterChoices',
+      'score'
     ])
   },
 
@@ -99,12 +106,30 @@ export default {
     Mechanic,
     Score,
     Zombie,
+    GameStateFinish,
   },
 
   methods: {
     pickQuestion(character) {
       this.$store.commit('PICK_QUESTION', character)
-    }
+    },
+
+    shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1))
+        ;[array[i], array[j]] = [array[j], array[i]]
+      }
+      return array
+    },
+  },
+
+  watch: {
+    score(newValue, oldValue) {
+      console.log(oldValue)
+      gsap.to(".bottom-clip-path, .top-clip-path", {
+        y: -newValue * 6,
+      })
+    },
   },
 };
 
